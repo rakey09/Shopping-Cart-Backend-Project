@@ -1,6 +1,7 @@
 package com.rakey.EazyShop.service.product;
 
 import com.rakey.EazyShop.exceptions.ProductNotFoundException;
+import com.rakey.EazyShop.exceptions.ResourceNotFoundException;
 import com.rakey.EazyShop.model.Category;
 import com.rakey.EazyShop.model.Product;
 import com.rakey.EazyShop.repository.CategoryRepository;
@@ -46,14 +47,14 @@ public class ProductService implements IProductService{
     @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(()->new ProductNotFoundException("Product Not Found"));
+                .orElseThrow(()->new ResourceNotFoundException("Product Not Found"));
     }
 
     @Override
     public void deleteProductById(Long id) {
         productRepository.findById(id)
                 .ifPresentOrElse(productRepository::delete,
-                ()->{throw new ProductNotFoundException("Product Not Found");});
+                ()->{throw new ResourceNotFoundException("Product Not Found");});
 
     }
 
@@ -63,7 +64,7 @@ public class ProductService implements IProductService{
         return productRepository.findById(productId)
                 .map(existingProduct->updateExistingProduct(existingProduct,request))
                 .map(productRepository::save)
-                .orElseThrow(()->new ProductNotFoundException("Product Not Found"));
+                .orElseThrow(()->new ResourceNotFoundException("Product Not Found"));
 
     }
 

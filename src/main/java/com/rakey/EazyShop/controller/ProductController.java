@@ -116,7 +116,7 @@ public class ProductController {
                 ResponseEntity.status(NOT_FOUND).body(new ApiResponse("No Product found",null));
             }
             return ResponseEntity.ok(new ApiResponse("Success",products));
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse(e.getMessage(), null));
         }
 
@@ -130,8 +130,18 @@ public class ProductController {
                 ResponseEntity.status(NOT_FOUND).body(new ApiResponse("No Product found",null));
             }
             return ResponseEntity.ok(new ApiResponse("Success",products));
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+
+    public ResponseEntity<ApiResponse> countProductsByBrandAndName(@RequestParam String brand, @RequestParam String name){
+        try {
+            var productCount = productService.countProductsByBrandAndName(brand, name);
+            return ResponseEntity.ok(new ApiResponse("Product Count!",productCount));
+        } catch (Exception e) {
+           return ResponseEntity.ok(new ApiResponse(e.getMessage(), null));
         }
     }
 

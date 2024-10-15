@@ -7,6 +7,7 @@ import com.rakey.EazyShop.model.Product;
 import com.rakey.EazyShop.repository.ImageRepository;
 import com.rakey.EazyShop.service.product.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -14,7 +15,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class ImageService implements IImageService{
     @Autowired
     private ImageRepository imageRepository;

@@ -1,8 +1,10 @@
 package com.rakey.EazyShop.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+
 public class ImageDto {
     private Long imageId;
     private String imageName;

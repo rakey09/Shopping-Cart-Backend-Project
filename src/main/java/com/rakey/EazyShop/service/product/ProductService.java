@@ -1,13 +1,17 @@
 package com.rakey.EazyShop.service.product;
 
-import com.rakey.EazyShop.exceptions.ProductNotFoundException;
+import com.rakey.EazyShop.dto.ImageDto;
+import com.rakey.EazyShop.dto.ProductDto;
 import com.rakey.EazyShop.exceptions.ResourceNotFoundException;
 import com.rakey.EazyShop.model.Category;
+import com.rakey.EazyShop.model.Image;
 import com.rakey.EazyShop.model.Product;
 import com.rakey.EazyShop.repository.CategoryRepository;
+import com.rakey.EazyShop.repository.ImageRepository;
 import com.rakey.EazyShop.repository.ProductRepository;
 import com.rakey.EazyShop.request.AddProductRequest;
 import com.rakey.EazyShop.request.ProductUpdateRequest;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +25,22 @@ public class ProductService implements IProductService{
 
     @Autowired
     private CategoryRepository categoryRepository;
-    @Override
-    public Product addProduct(AddProductRequest product) {
 
-        Category category = Optional.ofNullable(categoryRepository.findByName(product.getCategory().getName()))
-                .orElseGet(()->{
-                    Category newCategory = new Category();
+    @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+    @Override
+    public Product addProduct(AddProductRequest request) {
+
+        Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
+                .orElseGet(() -> {
+                    Category newCategory = new Category(request.getCategory().getName());
                     return categoryRepository.save(newCategory);
                 });
-        product.setCategory(category);
-        return productRepository.save(createProduct(product,category));
+        request.setCategory(category);
+        return productRepository.save(createProduct(request, category));
     }
 
     private Product createProduct(AddProductRequest request, Category category){
@@ -115,5 +125,21 @@ public class ProductService implements IProductService{
     public Long countProductsByBrandAndName(String brand, String name) {
 
         return productRepository.countByBrandAndName(brand,name);
+    }
+
+    @Override
+    public List<ProductDto> getConvertedProducts(List<Product> products){
+        return products.stream().map(this::concertToDto).toList();
+    }
+
+    @Override
+    public ProductDto concertToDto(Product product){
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        List<Image> images = imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDtos = images.stream()
+                .map(image ->modelMapper.map(image, ImageDto.class))
+                .toList();
+        productDto.setImages(imageDtos);
+        return productDto;
     }
 }

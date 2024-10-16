@@ -1,5 +1,6 @@
 package com.rakey.EazyShop.service.product;
 
+import com.rakey.EazyShop.dto.ProductDto;
 import com.rakey.EazyShop.model.Product;
 import com.rakey.EazyShop.request.AddProductRequest;
 import com.rakey.EazyShop.request.ProductUpdateRequest;
@@ -19,4 +20,8 @@ public interface IProductService {
     List<Product> getProductByName(String name);
     List<Product> getProductsByBrandAndName(String category,String name);
     Long countProductsByBrandAndName(String brand,String name);
+
+    List<ProductDto> getConvertedProducts(List<Product> products);
+
+    ProductDto concertToDto(Product product);
 }

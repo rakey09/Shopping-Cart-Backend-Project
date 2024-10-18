@@ -1,5 +1,6 @@
 package com.rakey.EazyShop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -27,11 +28,15 @@ public class CartItem {
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    public void setTotalPrice(){
+    public void setTotalPrice() {
         this.totalPrice = this.unitPrice.multiply(new BigDecimal(quantity));
+
     }
+
+
 }

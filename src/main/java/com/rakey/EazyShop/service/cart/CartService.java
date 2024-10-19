@@ -2,13 +2,15 @@ package com.rakey.EazyShop.service.cart;
 
 import com.rakey.EazyShop.exceptions.ResourceNotFoundException;
 import com.rakey.EazyShop.model.Cart;
-import com.rakey.EazyShop.model.CartItem;
 import com.rakey.EazyShop.repository.CartItemRepository;
 import com.rakey.EazyShop.repository.CartRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicLong;
+
 @Service
 public class CartService implements ICartService {
 
@@ -17,6 +19,8 @@ public class CartService implements ICartService {
 
     @Autowired
     private CartItemRepository cartItemRepository;
+
+    private final AtomicLong cartIdGenerator = new AtomicLong(0);
     @Override
     public Cart getCart(Long id) {
         Cart cart = cartRepository.findById(id)
@@ -25,7 +29,7 @@ public class CartService implements ICartService {
         cart.setTotalAmount(totalAmount);
         return cartRepository.save(cart);
     }
-
+    @Transactional
     @Override
     public void clearCart(Long id) {
         Cart cart = getCart(id);
@@ -41,5 +45,13 @@ public class CartService implements ICartService {
         Cart cart = getCart(id);
         return cart.getTotalAmount();
 
+    }
+
+    @Override
+    public Long initializationCart(){
+        Cart newCart = new Cart();
+        Long newCartId = cartIdGenerator.incrementAndGet();
+        newCart.setId(newCartId);
+        return cartRepository.save(newCart).getId();
     }
 }

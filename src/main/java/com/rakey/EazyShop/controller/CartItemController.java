@@ -17,13 +17,19 @@ public class CartItemController {
     @Autowired
     private ICartItemService cartItemService;
 
+    @Autowired
+    private ICartService cartService;
+
     @PostMapping("/item/add")
     public ResponseEntity<ApiResponse> addItemToCart(
-            @RequestParam Long cartId,
+            @RequestParam(required = false) Long cartId,
             @RequestParam Long productId,
             @RequestParam Integer quantity
     ){
         try {
+            if (cartId == null){
+                cartId = cartService.initializationCart();
+            }
             cartItemService.addItemToCart(cartId,productId,quantity );
             return ResponseEntity.ok(new ApiResponse("Add Item to cart",null));
         } catch (ResourceNotFoundException e) {
@@ -38,7 +44,7 @@ public class CartItemController {
     ){
         try {
             cartItemService.removeItemFormCart(cartId,productId);
-            return ResponseEntity.ok(new ApiResponse("Add Item to cart",null));
+            return ResponseEntity.ok(new ApiResponse("Remove Item From cart",null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
@@ -52,7 +58,7 @@ public class CartItemController {
     ){
         try {
             cartItemService.UpdateItemQuantity(cartId,productId,quantity);
-            return ResponseEntity.ok(new ApiResponse("Add Item to cart",null));
+            return ResponseEntity.ok(new ApiResponse("Updated Successfully",null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

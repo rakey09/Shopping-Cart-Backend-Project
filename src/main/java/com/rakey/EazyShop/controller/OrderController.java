@@ -1,5 +1,6 @@
 package com.rakey.EazyShop.controller;
 
+import com.rakey.EazyShop.dto.OrderDto;
 import com.rakey.EazyShop.exceptions.ResourceNotFoundException;
 import com.rakey.EazyShop.model.Order;
 import com.rakey.EazyShop.response.ApiResponse;
@@ -30,7 +31,7 @@ public class OrderController {
     @GetMapping("{orderId}/order")
     public ResponseEntity<ApiResponse> getOrderById(@PathVariable Long orderId){
         try {
-            Order order = orderService.getOrder(orderId);
+            OrderDto order = orderService.getOrder(orderId);
             return ResponseEntity.ok(new ApiResponse("Getting Order",order));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Oops!",e.getMessage()));
@@ -40,7 +41,7 @@ public class OrderController {
     @GetMapping("{userId}/order")
     public ResponseEntity<ApiResponse> getUserOrders(@PathVariable Long userId){
         try {
-            List<Order> orders = orderService.getUserOrders(userId);
+            List<OrderDto> orders = orderService.getUserOrders(userId);
             return ResponseEntity.ok(new ApiResponse("Getting Order",orders));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Oops!",e.getMessage()));

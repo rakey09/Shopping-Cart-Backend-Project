@@ -1,5 +1,6 @@
 package com.rakey.EazyShop.service.order;
 
+import com.rakey.EazyShop.dto.OrderDto;
 import com.rakey.EazyShop.enums.OrderStatus;
 import com.rakey.EazyShop.exceptions.ResourceNotFoundException;
 import com.rakey.EazyShop.model.Cart;
@@ -9,6 +10,7 @@ import com.rakey.EazyShop.model.Product;
 import com.rakey.EazyShop.repository.OrderRepository;
 import com.rakey.EazyShop.repository.ProductRepository;
 import com.rakey.EazyShop.service.cart.ICartService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,9 @@ public class OrderService implements IOrderService{
 
     @Autowired
     private ICartService cartService;
+
+    @Autowired
+    private ModelMapper modelMapper;
     @Override
     public Order placeOrder(Long userId) {
         Cart cart = cartService.getCartByUserId(userId);
@@ -70,13 +75,19 @@ public class OrderService implements IOrderService{
     }
 
     @Override
-    public Order getOrder(Long orderId) {
+    public OrderDto getOrder(Long orderId) {
         return orderRepository.findById(orderId)
+                .map(this::covertToDto)
                 .orElseThrow(()->new ResourceNotFoundException("Order Not Fount"));
     }
 
     @Override
-    public List<Order> getUserOrders(Long userId){
-        return orderRepository.findByUserId(userId);
+    public List<OrderDto> getUserOrders(Long userId){
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream().map(this::covertToDto).toList();
+    }
+
+    private OrderDto covertToDto(Order order){
+        return modelMapper.map(order, OrderDto.class);
     }
 }

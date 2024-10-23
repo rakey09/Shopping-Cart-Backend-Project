@@ -1,9 +1,12 @@
 package com.rakey.EazyShop.controller;
 
 import com.rakey.EazyShop.exceptions.ResourceNotFoundException;
+import com.rakey.EazyShop.model.Cart;
+import com.rakey.EazyShop.model.User;
 import com.rakey.EazyShop.response.ApiResponse;
 import com.rakey.EazyShop.service.cart.ICartItemService;
 import com.rakey.EazyShop.service.cart.ICartService;
+import com.rakey.EazyShop.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,18 +22,20 @@ public class CartItemController {
 
     @Autowired
     private ICartService cartService;
+    @Autowired
+    private IUserService userService;
 
     @PostMapping("/item/add")
     public ResponseEntity<ApiResponse> addItemToCart(
-            @RequestParam(required = false) Long cartId,
+
             @RequestParam Long productId,
             @RequestParam Integer quantity
     ){
         try {
-            if (cartId == null){
-                cartId = cartService.initializationCart();
-            }
-            cartItemService.addItemToCart(cartId,productId,quantity );
+            User user = userService.getUserById(4L);
+            Cart cart = cartService.initializationCart(user);
+
+            cartItemService.addItemToCart(cart.getId(),productId,quantity );
             return ResponseEntity.ok(new ApiResponse("Add Item to cart",null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

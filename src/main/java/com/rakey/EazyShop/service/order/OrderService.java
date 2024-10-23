@@ -87,7 +87,8 @@ public class OrderService implements IOrderService{
         return orders.stream().map(this::covertToDto).toList();
     }
 
-    private OrderDto covertToDto(Order order){
+    @Override
+    public OrderDto covertToDto(Order order){
         return modelMapper.map(order, OrderDto.class);
     }
 }

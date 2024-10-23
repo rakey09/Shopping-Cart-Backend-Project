@@ -1,6 +1,7 @@
 package com.rakey.EazyShop.controller;
 
 import com.rakey.EazyShop.dto.ProductDto;
+import com.rakey.EazyShop.exceptions.AlreadyExistsException;
 import com.rakey.EazyShop.exceptions.ResourceNotFoundException;
 import com.rakey.EazyShop.model.Product;
 import com.rakey.EazyShop.request.AddProductRequest;
@@ -14,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
@@ -48,8 +48,8 @@ public class ProductController {
             Product theProduct = productService.addProduct(product);
             ProductDto productDto = productService.concertToDto(theProduct);
             return ResponseEntity.ok(new ApiResponse("Add Product Success",productDto));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), INTERNAL_SERVER_ERROR));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), INTERNAL_SERVER_ERROR));
         }
     }
 

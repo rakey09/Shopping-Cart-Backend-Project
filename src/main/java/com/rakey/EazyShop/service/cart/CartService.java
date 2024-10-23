@@ -1,14 +1,18 @@
 package com.rakey.EazyShop.service.cart;
 
+import com.rakey.EazyShop.dto.CartDto;
 import com.rakey.EazyShop.exceptions.ResourceNotFoundException;
 import com.rakey.EazyShop.model.Cart;
+import com.rakey.EazyShop.model.User;
 import com.rakey.EazyShop.repository.CartItemRepository;
 import com.rakey.EazyShop.repository.CartRepository;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -19,6 +23,9 @@ public class CartService implements ICartService {
 
     @Autowired
     private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     private final AtomicLong cartIdGenerator = new AtomicLong(0);
     @Override
@@ -48,15 +55,20 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Long initializationCart(){
-        Cart newCart = new Cart();
-        Long newCartId = cartIdGenerator.incrementAndGet();
-        newCart.setId(newCartId);
-        return cartRepository.save(newCart).getId();
+    public Cart initializationCart(User user){
+        return Optional.ofNullable(getCartByUserId(user.getId()))
+                .orElseGet(() -> {
+                    Cart cart = new Cart();
+                    cart.setUser(user);
+                    return cartRepository.save(cart);
+                });
     }
 
     @Override
     public Cart getCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId);
     }
+
+
+
 }

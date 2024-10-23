@@ -1,5 +1,6 @@
 package com.rakey.EazyShop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +20,9 @@ public class OrderItem {
     private int quantity;
     private BigDecimal price;
 
+
     @ManyToOne
-    @JoinColumn(name = "Order_id")
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @ManyToOne

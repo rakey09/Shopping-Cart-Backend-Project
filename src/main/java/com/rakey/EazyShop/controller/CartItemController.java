@@ -7,11 +7,13 @@ import com.rakey.EazyShop.response.ApiResponse;
 import com.rakey.EazyShop.service.cart.ICartItemService;
 import com.rakey.EazyShop.service.cart.ICartService;
 import com.rakey.EazyShop.service.user.IUserService;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
 @RequestMapping("${api.prefix}/cartItems")
@@ -32,13 +34,15 @@ public class CartItemController {
             @RequestParam Integer quantity
     ){
         try {
-            User user = userService.getUserById(4L);
+            User user = userService.getAuthenticatedUser();
             Cart cart = cartService.initializationCart(user);
 
             cartItemService.addItemToCart(cart.getId(),productId,quantity );
             return ResponseEntity.ok(new ApiResponse("Add Item to cart",null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }catch (JwtException e){
+            return ResponseEntity.status(UNAUTHORIZED).body(new ApiResponse(e.getMessage(),null));
         }
     }
 
